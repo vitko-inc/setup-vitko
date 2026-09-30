@@ -1,0 +1,36 @@
+name: Set up vitko
+description: Install the vitko command-line tool for Vitko Runners, verified, and add it to the PATH.
+author: Vitko
+branding:
+  icon: terminal
+  color: gray-dark
+
+inputs:
+  version:
+    description: Version to install, for example v0.1.0, or "latest".
+    default: latest
+  verify-provenance:
+    description: Check the archive's GitHub build provenance with the GitHub CLI when it is available ("true" or "false"). The SHA-256 checksum is always checked.
+    default: "true"
+  token:
+    description: GitHub token used to look up releases and check provenance.
+    default: ${{ github.token }}
+
+outputs:
+  version:
+    description: The installed version, for example v0.1.0.
+    value: ${{ steps.install.outputs.version }}
+  path:
+    description: Full path of the vitko binary.
+    value: ${{ steps.install.outputs.path }}
+
+runs:
+  using: composite
+  steps:
+    - id: install
+      shell: bash
+      env:
+        INPUT_VERSION: ${{ inputs.version }}
+        INPUT_VERIFY_PROVENANCE: ${{ inputs.verify-provenance }}
+        GH_TOKEN: ${{ inputs.token }}
+      run: "$GITHUB_ACTION_PATH/install.sh"
